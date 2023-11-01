@@ -7,12 +7,14 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/challenge/http01"
 	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v4/lego"
+	legoLog "github.com/go-acme/lego/v4/log"
 	"github.com/go-acme/lego/v4/registration"
 )
 
@@ -34,6 +36,8 @@ func (u *MyUser) GetPrivateKey() crypto.PrivateKey {
 }
 
 func main() {
+
+	legoLog.Logger = log.New(os.Stdout, "ren's override: ", log.LstdFlags)
 
 	// Create a user. New accounts need an email and private key to start.
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
