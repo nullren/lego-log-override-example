@@ -7,12 +7,13 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
+	"os"
 
-	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/challenge/http01"
 	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v4/lego"
+	legoLog "github.com/go-acme/lego/v4/log"
 	"github.com/go-acme/lego/v4/registration"
 )
 
@@ -35,6 +36,13 @@ func (u *MyUser) GetPrivateKey() crypto.PrivateKey {
 
 func main() {
 
+	myLogger := log.New(os.Stdout, "my logger: ", log.LUTC)
+
+	// make acme lego Logger use our logger
+	legoLog.Logger = myLogger
+
+	log.SetOutput(myLogger.Writer())
+
 	// Create a user. New accounts need an email and private key to start.
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -49,8 +57,8 @@ func main() {
 	config := lego.NewConfig(&myUser)
 
 	// This CA URL is configured for a local dev instance of Boulder running in Docker in a VM.
-	config.CADirURL = "http://192.168.99.100:4000/directory"
-	config.Certificate.KeyType = certcrypto.RSA2048
+	// config.CADirURL = "http://192.168.99.100:4000/directory"
+	// config.Certificate.KeyType = certcrypto.RSA2048
 
 	// A client facilitates communication with the CA server.
 	client, err := lego.NewClient(config)
