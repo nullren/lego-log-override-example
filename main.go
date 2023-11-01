@@ -36,9 +36,12 @@ func (u *MyUser) GetPrivateKey() crypto.PrivateKey {
 
 func main() {
 
-	legoLog.Logger = log.New(os.Stdout, "ren's override: ", log.LstdFlags)
-	logger, _ := legoLog.Logger.(*log.Logger)
-	log.SetOutput(logger.Writer())
+	myLogger := log.New(os.Stdout, "my logger: ", log.LUTC)
+
+	// make acme lego Logger use our logger
+	legoLog.Logger = myLogger
+
+	log.SetOutput(myLogger.Writer())
 
 	// Create a user. New accounts need an email and private key to start.
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
